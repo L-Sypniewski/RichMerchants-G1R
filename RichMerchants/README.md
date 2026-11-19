@@ -34,10 +34,13 @@ page coexists with a second enabled mod.)
   x0.8), exactly like vanilla.
 - For multipliers >= 1.0 nothing is ever reduced below vanilla (the
   original's `OnlyRaise` guarantee). Multipliers < 1.0 *do* reduce.
-- **New games** get boosted stock immediately. **Existing saves** get it when
-  the game next (re)builds a trader's stock (world start / chapter
-  transitions) — the UE4SS original patched live state instead and applied to
-  existing saves immediately. Same destination, different route.
+- **New games** get boosted stock immediately. **Existing saves**: trader
+  stock is serialized *inside the save* (current + baseline + fired events),
+  so an existing save keeps its accumulated vanilla stock until the next
+  chapter transition — that chapter's additions then arrive x3. Full x3
+  totals need a new game. (The UE4SS original patched live memory and could
+  re-base a running save; the ModKit exposes no accessor to live trader
+  state.)
 
 Full vanilla-vs-boosted reference table and port notes:
 <https://github.com/L-Sypniewski/RichMerchants-G1R>

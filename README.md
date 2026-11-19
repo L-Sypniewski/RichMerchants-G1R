@@ -53,17 +53,40 @@ consequences:
 | | UE4SS original | This port |
 |---|---|---|
 | New game | boosted at once (runtime patch) | boosted at once (config seed) |
-| **Existing save** | boosted at once | boosted when the game next (re)builds the trader's stock (world start / chapter transitions) |
+| **Existing save** | boosted at once | next chapter transition delivers its stock additions x3; accumulated stock stays vanilla (see below) |
 | Save purity | live state patched out-of-band every ~34 s | stock produced by the game's own config pipeline |
 | OnlyRaise (never reduce below current) | explicit `max(current, target)` | inherent for multipliers >= 1.0 (nothing is ever below vanilla); multipliers < 1.0 *do* reduce below vanilla |
 | Debug keys F6/F7, console `rm_apply`/`rm_status`, Verbose logging | yes (UE4SS log) | not ported (no UE4SS; the game writes no script logs) |
 | Config | `config.lua` | three `const float`s at the top of `RichMerchants/Script/RichMerchants/RichMerchantsStock.as` |
 
-Not ported, by design: an in-game settings UI (a game-build bug crashes any
-mod registering a settings page when a second mod is enabled — see
-[docs](https://github.com/L-Sypniewski/BalancedTraders-G1R) in the
-BalancedTraders repo) and the diagnostic keybinds (they only wrote to the
-UE4SS log, which doesn't exist for ModKit mods).
+### Why existing saves can't be re-based mid-chapter (engine evidence)
+
+The game **serializes trader stock into the save**: every trader's current
+and baseline stock (`FTraderData.m_Items` / `m_DefaultItems`) plus the
+already-fired restock events (`m_GeneratedEvents`) are stored in
+`GameStateDataBaseSaveData.m_Traders`. On load, live stock is *restored from
+the save*, not rebuilt from config — so a config-side boost only enters an
+existing save when a not-yet-generated restock event fires (i.e. the next
+chapter transition), and it boosts that chapter's **additions**, not the
+accumulated total.
+
+The UE4SS original could reach the live trader instances
+(`TraderManager.m_InstancedTraders`) and rewrite them from outside; the
+ModKit's AngelScript deliberately cannot: `UTraderManager` binds only
+`GetCharacterOre`/`RemoveCharacterOre`, the trade widgets are view-only, and
+the save-data object is not script-reachable. So: **existing save → next
+chapter grants its additions x3; full x3 totals require a new game.** This
+is a platform limit, not a port shortcut.
+
+Not ported, by design: an in-game settings UI. Not because of the old crash
+— the build-102 "settings page + second mod" crash is **fixed on build 106**
+(proven by harness run 5 in `RichMerchants/VALIDATION.md`, matching the
+settings pages of other current mods) — but because the multipliers here are
+baked into compiled class defaults (the stock tables are built at script
+compile time); a settings row cannot retroactively drive them, and the
+runtime CDO-rewrite alternative has unverifiable exactness (native
+duplicate-key semantics for stock entries are unknown). Editing three
+constants is the honest mechanism.
 
 ## What's in here
 
