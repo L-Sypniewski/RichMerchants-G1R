@@ -30,6 +30,29 @@ Run-4 note: BalancedTraders also uses `ReplaceParentClass` (on item
 classes) and EconomyProbe registers an IngameTools panel; neither interacts
 with `UTraderConfigBase`, and all three packages compiled together cleanly.
 
+| # | Mod content | Flags / isolation | Result | Conclusion |
+|---|---|---|---|---|
+| 5 | **Settings-page probe**: copy of the package as `RichMerchantsSettingsTest` + `UGothicModExt_UserSettings` page (3 x `FModUserSettingsFloat(Value = 3.0f)`, `UPROPERTY(Config)`), run from a temp `-ModsDirectory` | `-as-exit-on-error -as-ignore-precompiled-data -Mods=RichMerchantsSettingsTest`, **BalancedTraders + EconomyProbe enabled via `Mods.ini`** (the exact build-102 crash scenario, P7-P16) | alive ≥ 235 s (**124**) | **the build-102 "settings page + second mod" crash is fixed on build 106** — settings pages are multi-mod-safe again (matches the settings pages of other current mods). Probe not shipped: the mod's multipliers are compile-time constants, so a settings row would have no honest effect |
+
+### Engine facts established during this port (evidence: `Binds.Cache` + vanilla sources)
+
+- **Trader stock is save-persisted**: `GameStateDataBaseSaveData.m_Traders`
+  (`TArray<FTraderData>`) stores per-trader `m_TradersUniqueName`, live
+  `m_Items`, baseline `m_DefaultItems` and fired-event log `m_GeneratedEvents`.
+  On save load, live stock is restored from this, not rebuilt from config —
+  config-side boosts only enter existing saves via not-yet-fired restock
+  events (chapter transitions).
+- `UTraderManager` binds only `GetCharacterOre`/`RemoveCharacterOre`;
+  trading widgets (`UTradingBalance*`) are view-only; the save-data object
+  has no script-accessible holder. Live trader stock is therefore NOT
+  patchable from AngelScript — the UE4SS original's main advantage.
+- `FModUserSettingsFloat` is bound on this build but exposes **only
+  `Value`** (no `DefaultValue`/`DisplayText`/`MinValue`/… — the richer
+  ctor args in current ModKit examples target a newer build).
+- Useful bound reflection helpers: `UClass::GetAllSubclassesOf`,
+  `UUClassFunctionLibrary::FindAllClassesInheritingFrom`,
+  `ClassName.DefaultObject`, `FindAllByUniqueName` (character states).
+
 ### What is and is not proven
 
 Proven by the runs above:
