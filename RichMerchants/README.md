@@ -12,24 +12,17 @@ leaves every other stock item and all dynamic pricing untouched.
 
 ## Configure
 
-Open `Script/RichMerchants/RichMerchantsStock.as` in any text editor and
-edit the three constants near the top:
+In-game: **Settings → Game → "Rich Merchants"** — three sliders, top to
+bottom: **ore / arrows / bolts** (unlabeled on build 106 — a game-build
+binding limit; range 0–100, defaults 3.0).
 
-```angelscript
-const float OreMultiplier   = 3.0f; // ore    (ItMi_Orenugget)
-const float ArrowMultiplier = 3.0f; // arrows (ItAm_Arrow)
-const float BoltMultiplier  = 3.0f; // bolts  (ItAm_Bolt)
-```
-
-`2.0` = double, `1.0` = leave that item untouched. The game recompiles the
-scripts on launch — no extra tooling needed.
-
-There is no in-game settings page, by measurement: one was built and tested
-on the current build and removed — the sliders rendered and persisted, but
-nothing script-reachable can apply them to trader stock (stock tables are
-compiled into the trader class defaults; see the repository README,
-"Withdrawn settings experiment"). The constants above are the real,
-verified mechanism.
+- **Changed values apply from the next game launch** — stock tables are
+  compiled during script load, so a new game started in the same session as
+  the change uses the previous values.
+- 0 removes the item from stock; values < 1.0 reduce below vanilla (the
+  original's OnlyRaise guarantee holds for ≥ 1.0).
+- The first-boot defaults (3.0) live in `Script/RichMerchants/Settings.as`
+  if you ever want to change what a fresh install starts with.
 
 ## How it behaves
 
