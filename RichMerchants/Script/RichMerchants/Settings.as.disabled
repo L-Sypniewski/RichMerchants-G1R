@@ -1,0 +1,42 @@
+// WITHDRAWN (2026-11-20, user-verified in-game on build 106): the page
+// renders and persists (GameUserSettings.ini), but no script-reachable
+// path applies the values to initial trader stock — with all three
+// sliders set to 5.0 (persisted) a new game still seeded stock at the
+// compile-time 3.0 values (Sharky ore 69, arrows 30). A HandleReadyForPlay
+// CDO re-base of m_ItemsByDifficulty is too late / ineffective for initial
+// stock. Kept for reference; do not enable without a working application
+// path. See VALIDATION.md.
+
+// RichMerchants — in-game settings page.
+//
+// Multipliers for every trader's ore / arrows / bolts stock. Values are
+// applied at world start (and every save load) by URichMerchantsSubsystem
+// (TraderStockRebase.as): the trader stock configs are re-based to exactly
+// vanilla x value, so changing a setting takes effect from the next stock
+// generation (chapter restocks, new games) — no restart needed for the
+// config, but a load/new-game to apply.
+//
+// NOTE (build 106): only the `Value` member of FModUserSettingsFloat is
+// script-bound (no DisplayText/MinValue/MaxValue/StepSize — those need a
+// newer build), so the rows render with engine-default labels. Values are
+// clamped to [0, 100] when applied.
+
+UCLASS(Config = GameUserSettings)
+class URichMerchantsUserSettings : UGothicModExt_UserSettings
+{
+    default CategoryName = FText::FromString("Rich Merchants");
+
+    // NOTE: do NOT add `meta = (DisplayName = ...)` to these UPROPERTYs — a
+    // frozen-main-menu-then-exit was observed on build 106 with it (the
+    // ModExt settings scan appears to choke; reverted; see VALIDATION.md).
+    // Slider order top->bottom = ore / arrows / bolts; build 106 binds no
+    // DisplayText on FModUserSettingsFloat, so the rows render unlabeled.
+    UPROPERTY(Config)
+    FModUserSettingsFloat OreMultiplier = FModUserSettingsFloat(Value = 3.0f);
+
+    UPROPERTY(Config)
+    FModUserSettingsFloat ArrowMultiplier = FModUserSettingsFloat(Value = 3.0f);
+
+    UPROPERTY(Config)
+    FModUserSettingsFloat BoltMultiplier = FModUserSettingsFloat(Value = 3.0f);
+}
