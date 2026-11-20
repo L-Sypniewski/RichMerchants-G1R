@@ -40,6 +40,18 @@
 //   boost when the game next (re)builds a trader's stock (world start / chapter
 //   transitions). Multiplier x1.0 for an item disables the boost for it.
 
+// ---- runtime hooks for the settings experiment (TraderStockRebase.as) ----
+// Every stock entry passing through the override is ALSO captured in its
+// VANILLA form (append-only, so duplicate (item, event) entries — e.g.
+// Dexter's three "OnWorldStart" ore rows — are preserved exactly).
+
+struct FRichMerchantsCapturedStock
+{
+    int ItemId;      // 0 = ore, 1 = arrow, 2 = bolt
+    FString Event;   // restock event, e.g. "OnWorldStart"
+    int BaseCount;   // vanilla base amount (pre-difficulty)
+}
+
 UCLASS(meta = (ReplaceParentClass))
 class UTraderConfigBase_RichMerchants : UTraderConfigBase
 {
@@ -52,6 +64,20 @@ class UTraderConfigBase_RichMerchants : UTraderConfigBase
     const float ArrowMultiplier = 3.0f; // arrows (ItAm_Arrow)
     const float BoltMultiplier  = 3.0f; // bolts  (ItAm_Bolt)
     // -----------------------------------------------------------------------
+
+    // Vanilla bases captured during class-default execution (see above).
+    TArray<FRichMerchantsCapturedStock> m_VanillaStock;
+
+    int GetRichMerchantsItemId(TSubclassOf<UItemDefinition> item)
+    {
+        if (item == UItMi_Orenugget::StaticClass())
+            return 0;
+        if (item == UItAm_Arrow::StaticClass())
+            return 1;
+        if (item == UItAm_Bolt::StaticClass())
+            return 2;
+        return -1;
+    }
 
     float GetRichMerchantsMultiplier(TSubclassOf<UItemDefinition> item)
     {
@@ -70,6 +96,16 @@ class UTraderConfigBase_RichMerchants : UTraderConfigBase
     // members; AddTraderItem is the native UTraderConfig entry point.
     void AddTraderItemAllDifficulties(TSubclassOf<UItemDefinition> item, int count, FString event) override
     {
+        int ItemId = GetRichMerchantsItemId(item);
+        if (ItemId >= 0)
+        {
+            FRichMerchantsCapturedStock Captured;
+            Captured.ItemId = ItemId;
+            Captured.Event = event;
+            Captured.BaseCount = count;
+            m_VanillaStock.Add(Captured);
+        }
+
         float Mult = GetRichMerchantsMultiplier(item);
         int category = GetCategoryForItem(item);
         int countEasy = RoundToInt(RoundToInt(float(count) * GetTraderCategoryMultiplier(UResourcesDifficultySettings_Easy::StaticClass(), category)) * Mult);
