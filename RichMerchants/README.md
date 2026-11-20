@@ -22,9 +22,14 @@ const float BoltMultiplier  = 3.0f; // bolts  (ItAm_Bolt)
 ```
 
 `2.0` = double, `1.0` = leave that item untouched. The game recompiles the
-scripts on launch — no extra tooling needed. (There is intentionally no
-in-game settings page: a current game build crashes when a modded settings
-page coexists with a second enabled mod.)
+scripts on launch — no extra tooling needed.
+
+There is no in-game settings page, by measurement: one was built and tested
+on the current build and removed — the sliders rendered and persisted, but
+nothing script-reachable can apply them to trader stock (stock tables are
+compiled into the trader class defaults; see the repository README,
+"Withdrawn settings experiment"). The constants above are the real,
+verified mechanism.
 
 ## How it behaves
 

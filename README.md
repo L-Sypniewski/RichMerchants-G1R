@@ -57,7 +57,22 @@ consequences:
 | Save purity | live state patched out-of-band every ~34 s | stock produced by the game's own config pipeline |
 | OnlyRaise (never reduce below current) | explicit `max(current, target)` | inherent for multipliers >= 1.0 (nothing is ever below vanilla); multipliers < 1.0 *do* reduce below vanilla |
 | Debug keys F6/F7, console `rm_apply`/`rm_status`, Verbose logging | yes (UE4SS log) | not ported (no UE4SS; the game writes no script logs) |
-| Config | `config.lua` | three `const float`s at the top of `RichMerchants/Script/RichMerchants/RichMerchantsStock.as` |
+| Config | `config.lua` | three `const float`s at the top of `RichMerchants/Script/RichMerchants/RichMerchantsStock.as` (game recompiles on launch) |
+
+### Why there is no settings page (v1.1.0 experiment, withdrawn)
+
+A settings page was built and tested in-game on build 106 and then removed:
+the sliders render and persist correctly (`GameUserSettings.ini`), but with
+all three set to 5.0 (persisted) a new game still seeded stock at the
+compile-time 3.0 values (Sharky: ore 69 / arrows 30 — user-verified). Stock
+tables are compiled into trader class defaults, and no script-reachable
+runtime path (including a `HandleReadyForPlay` re-base of the CDO
+`m_ItemsByDifficulty` maps) affects initial stock on this build. Shipping
+sliders that don't do anything would be dishonest, so the multipliers are
+compile-time constants instead. The experiment is preserved as
+`Settings.as.disabled` / `TraderStockRebase.as.disabled` with the evidence;
+the build-102 multi-mod settings crash itself **is fixed** on build 106
+(harness run 5), so other mods' settings pages coexist fine with this mod.
 
 ### Why existing saves can't be re-based mid-chapter (engine evidence)
 
@@ -78,24 +93,16 @@ the save-data object is not script-reachable. So: **existing save → next
 chapter grants its additions x3; full x3 totals require a new game.** This
 is a platform limit, not a port shortcut.
 
-Not ported, by design: an in-game settings UI. Not because of the old crash
-— the build-102 "settings page + second mod" crash is **fixed on build 106**
-(proven by harness run 5 in `RichMerchants/VALIDATION.md`, matching the
-settings pages of other current mods) — but because the multipliers here are
-baked into compiled class defaults (the stock tables are built at script
-compile time); a settings row cannot retroactively drive them, and the
-runtime CDO-rewrite alternative has unverifiable exactness (native
-duplicate-key semantics for stock entries are unknown). Editing three
-constants is the honest mechanism.
-
 ## What's in here
 
 | Path | What it is |
 |---|---|
 | `RichMerchants/` | The mod package (Steam Workshop-ready) |
+| `RichMerchantsTestTool/` | Dev-only IngameTools panel: teleports to a trader to verify stock in-game (used for the Sharky verification; not for end users) |
+| `RichMerchants/Script/RichMerchants/Settings.as.disabled`, `TraderStockRebase.as.disabled` | The withdrawn settings experiment, kept with evidence (see below) |
 | `docs/vanilla-stock-table.md` | Every vanilla ore/arrow/bolt stock entry vs x3-boosted, extracted from the game's scripts |
 | `tools/extract_trader_stock.py` | Dev aid that generates the table (not shipped in the package) |
-| `RichMerchants/VALIDATION.md` | Compile-validation evidence |
+| `RichMerchants/VALIDATION.md` | Compile + in-game validation evidence |
 
 ## Installation
 
@@ -106,10 +113,15 @@ stack with another mod that multiplies the same stock (effects would chain).
 
 ## Status
 
-Compile-validated against game build `Build106_CL176207` with the calibrated
-`-as-exit-on-error` harness (negative control + clean + multi-mod runs;
-evidence in `RichMerchants/VALIDATION.md`). In-game stock amounts need a
-human session to confirm — see VALIDATION.md for what is and isn't proven.
+- **In-game verified** (build `Build106_CL176207`, human session 2026-11-20):
+  new game, Sharky chapter 1 = **ore 69 / arrows 30** (exactly 23x3 / 10x3 on
+  Standard) — the `ReplaceParentClass` seed override drives real trader
+  stock end-to-end. Compile-validation evidence (negative control, isolated,
+  default-boot and multi-mod runs) in `RichMerchants/VALIDATION.md`.
+- Known game-build-102 mod bugs and the build-106 settings findings are
+  documented in `docs/g1r-modding-notes.md` of the
+  [BalancedTraders-G1R](https://github.com/L-Sypniewski/BalancedTraders-G1R)
+  repository.
 
 ## License
 

@@ -32,7 +32,51 @@ with `UTraderConfigBase`, and all three packages compiled together cleanly.
 
 | # | Mod content | Flags / isolation | Result | Conclusion |
 |---|---|---|---|---|
-| 5 | **Settings-page probe**: copy of the package as `RichMerchantsSettingsTest` + `UGothicModExt_UserSettings` page (3 x `FModUserSettingsFloat(Value = 3.0f)`, `UPROPERTY(Config)`), run from a temp `-ModsDirectory` | `-as-exit-on-error -as-ignore-precompiled-data -Mods=RichMerchantsSettingsTest`, **BalancedTraders + EconomyProbe enabled via `Mods.ini`** (the exact build-102 crash scenario, P7-P16) | alive ≥ 235 s (**124**) | **the build-102 "settings page + second mod" crash is fixed on build 106** — settings pages are multi-mod-safe again (matches the settings pages of other current mods). Probe not shipped: the mod's multipliers are compile-time constants, so a settings row would have no honest effect |
+| 5 | **Settings-page probe** (2026-11-20): copy of the package as `RichMerchantsSettingsTest` + `UGothicModExt_UserSettings` page (3 x `FModUserSettingsFloat(Value = 3.0f)`), temp `-ModsDirectory` | `-as-exit-on-error -as-ignore-precompiled-data`, **BalancedTraders + EconomyProbe via `Mods.ini`** (the exact build-102 crash scenario, P7-P16) | alive ≥ 235 s (**124**) | **the build-102 "settings page + second mod" crash is fixed on build 106** — settings pages are multi-mod-safe again |
+| 6 | **v1.1.0 first iteration** (Settings.as + TraderStockRebase.as with `UUClassFunctionLibrary::FindClassFromName` + baked table) | isolated, full recompile | **exit 3** | compile error — bisected below |
+| 7–12 | Bisection probes P2b/P3/P4/P5/P6 (temp packages) | same harness | see below | failures isolated to two engine quirks; two earlier probes (P1, P2) were invalid (probe-construction mistakes: dangling `ApplySettings()` call; dead code referencing removed locals) and are excluded |
+
+### v1.1.0 bisection (each row one isolated compile run)
+
+| Probe | Tested | Exit | Finding |
+|---|---|---|---|
+| P2b | `Settings.as` + top-level struct + `TArray<struct>` + 115 literal calls + subsystem shell | **124** | settings page, struct, array, literals all compile |
+| P3 | + `UUClassFunctionLibrary::FindClassFromName` + `UClass.GetDefaultObject()` + `Cast<UTraderConfigBase>` + typed foreach + settings read | 3 | failure inside this set |
+| P4 | P3 minus the settings read (literal 3.0) | 3 | settings read exonerated |
+| P5 | `UUClassFunctionLibrary::FindClassFromName(n"USharkyTraderConfig")` alone | 3 | **the `UUClassFunctionLibrary::` receiver does not compile** — shipped scripts use `UClass::` receivers (`UClass::GetAllSubclassesOf(...)`, `UClass::FindAllClassesInheritingFrom(...)`) |
+| P6 | settings CDO via `StaticClass().Get().DefaultObject` + Cast | 3 | **`.Get()` (→ `UClass`) has no `.DefaultObject`** — `.DefaultObject` is a `TSubclassOf` property; `UClassName.DefaultObject` directly works |
+
+Final v1.1.0 design (shipped): the seed override captures every vanilla stock entry into a per-CDO `TArray` while class defaults execute; the subsystem walks `UClass::GetAllSubclassesOf(UTraderConfigBase::StaticClass())`, reads `URichMerchantsUserSettings.DefaultObject`, and re-bases `m_ItemsByDifficulty` entries to `RoundToInt(RoundToInt(base x difficultyMult) x setting)` — no name lookups, no baked tables. Also fixed via the in-game error screen (human-read diagnostic): `DrawImGuiWindow` in a `UIngameTool` subclass requires `UFUNCTION(BlueprintOverride)` ("A function with the same name and parameters already exists in C++").
+
+### IN-GAME VERIFICATION (2026-11-20, human sessions, build 106)
+
+- **Stock boost verified end-to-end**: new game (Standard), teleported to
+  Sharky (`NC_ORG_Sharky_843`) with the dev test tool — **ore 69 (vanilla 23),
+  arrows 30 (vanilla 10)**. Proves the central runtime assumption: vanilla
+  trader configs' `default AddTraderItemAllDifficulties(...)` statements
+  dispatch through the `ReplaceParentClass` override, the math matches
+  bit-for-bit, trader instancing reads the boosted CDO, and the trade screen
+  shows it.
+- **Settings experiment — WITHDRAWN** (files kept as `*.as.disabled`):
+  a `UGothicModExt_UserSettings` page with three `FModUserSettingsFloat`
+  sliders rendered in the game settings (unlabeled — build 106 binds only
+  `Value`) and **persisted correctly** (`GameUserSettings.ini`:
+  `OreMultiplier=(Value=5.000000)` etc.). But with all three sliders at 5.0
+  (persisted across restart), a new game still seeded **ore 69 / arrows 30**
+  — the compile-time 3.0 values. A `HandleReadyForPlay` world subsystem
+  that walked `UClass::GetAllSubclassesOf(UTraderConfigBase::StaticClass())`
+  and re-based CDO `m_ItemsByDifficulty` entries could not affect initial
+  stock (too late in the boot flow and/or the map writes do not reach the
+  stock generator). Conclusion: **no script-reachable runtime path applies
+  settings to trader stock on build 106** — sliders would be decorative, so
+  the feature was removed and the compile-time constants shipped instead.
+  (The build-102 multi-mod settings crash itself IS fixed on 106 — run 5.)
+- Also observed: `-as-ignore-precompiled-data` validation launches render an
+  unresponsive main menu for the full script-recompile duration (minutes) —
+  they look like freezes on an interactive display; keep harness runs off
+  the user's screen. One `UPROPERTY(meta=(DisplayName=...))` variant run
+  ended in an abnormal (exit-1) session; the idiom is vanilla-proven
+  elsewhere but was not isolated further and stays unused here.
 
 ### Engine facts established during this port (evidence: `Binds.Cache` + vanilla sources)
 
@@ -49,33 +93,35 @@ with `UTraderConfigBase`, and all three packages compiled together cleanly.
 - `FModUserSettingsFloat` is bound on this build but exposes **only
   `Value`** (no `DefaultValue`/`DisplayText`/`MinValue`/… — the richer
   ctor args in current ModKit examples target a newer build).
-- Useful bound reflection helpers: `UClass::GetAllSubclassesOf`,
-  `UUClassFunctionLibrary::FindAllClassesInheritingFrom`,
-  `ClassName.DefaultObject`, `FindAllByUniqueName` (character states).
+- Useful reflection/class helpers — VERIFIED FORMS (build 106):
+  `UClass::GetAllSubclassesOf(BaseClass)` and
+  `UClass::FindAllClassesInheritingFrom(BaseClass)` (receiver must be
+  `UClass::` — the `UUClassFunctionLibrary::` receiver does NOT compile
+  despite the Binds.Cache attribution); `ScriptClassName.DefaultObject` and
+  `UClassRef.GetDefaultObject()` both work, but `ClassRef.Get().DefaultObject`
+  does not (`.DefaultObject` is a TSubclassOf property);
+  `AGothicCharacterState::FindByUniqueName(FName)` for characters.
 
 ### What is and is not proven
 
-Proven by the runs above:
+Proven by the runs above and the 2026-11-20 human sessions:
 
 - The package compiles in both boot paths (fresh recompile and precompiled
   vanilla), alone and alongside two other enabled mods.
 - The negative control proves the harness would have caught a script error
   in exactly this package shape.
+- **Runtime dispatch — human-verified in-game**: the 30 vanilla
+  trader-config classes' `default AddTraderItemAllDifficulties(...)`
+  statements dispatch through the `ReplaceParentClass` override; Sharky's
+  chapter-1 stock measured **69 ore / 30 arrows** (expected 23x3 / 10x3 on
+  Standard), so the math is bit-exact end-to-end (override → CDO → trader
+  instancing → trade screen).
 
-NOT yet machine-proven (no logs, no human in-game session during
-validation):
+Not (yet) verified:
 
-- **Runtime dispatch**: that the 30 vanilla trader-config classes' `default
-  AddTraderItemAllDifficulties(...)` statements actually dispatch through
-  this override when their class defaults execute. This follows from the
-  documented inheritance-injection mechanism (the mod loader re-parents the
-  class hierarchy before scripts compile — Script Hooking docs of the
-  G1R-Modkit — and AngelScript method calls dispatch to the most-derived
-  implementation), but a human in-game check (open any trader, e.g. Sharky:
-  vanilla CH1 ore 23 → expect 69 on Standard) is the final confirmation.
-- Actual in-trade stock amounts and behavior on existing saves (predicted:
-  new games boosted immediately; existing saves on world start / chapter
-  transitions).
+- Chapter-restock additions on an existing save (predicted x3 per chapter
+  entry; save-persisted accumulated stock stays vanilla — see the README's
+  existing-saves section for the engine evidence).
 
 ### Reproduce
 

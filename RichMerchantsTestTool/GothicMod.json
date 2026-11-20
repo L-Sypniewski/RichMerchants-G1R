@@ -1,0 +1,8 @@
+{
+	"name": "RichMerchantsTestTool",
+	"title": "Rich Merchants - DEV test tool (teleport to trader)",
+	"author": "L-Sypniewski",
+	"description": "Development-only IngameTools panel for verifying RichMerchants trader stock in-game (teleports the player to a trader). Not intended for end users or Steam Workshop.",
+	"modVersion": "0.1.0",
+	"loadOrder": "normal"
+}
