@@ -43,25 +43,53 @@
 UCLASS(meta = (ReplaceParentClass))
 class UTraderConfigBase_RichMerchants : UTraderConfigBase
 {
-    // ---- CONFIGURATION — edit these, the game recompiles on launch --------
-    // Multiplier applied to every trader's vanilla stock of each item.
-    //   2.0 = double, 3.0 = triple (original default), 1.0 = leave untouched.
-    // Values < 1.0 reduce stock below vanilla (the original's OnlyRaise
-    // guarantee only holds for multipliers >= 1.0).
-    const float OreMultiplier   = 3.0f; // ore    (ItMi_Orenugget = buying money)
-    const float ArrowMultiplier = 3.0f; // arrows (ItAm_Arrow)
-    const float BoltMultiplier  = 3.0f; // bolts  (ItAm_Bolt)
-    // -----------------------------------------------------------------------
+    // ---- CONFIGURATION ------------------------------------------------------
+    // Multipliers live in the in-game settings: Settings -> Game ->
+    // "Rich Merchants" — three sliders, top to bottom: ore / arrows / bolts
+    // (unlabeled on build 106; only `Value` is script-bound on
+    // FModUserSettingsFloat). Defaults 3.0 each (the original mod's values).
+    // CHANGED VALUES APPLY FROM THE NEXT GAME LAUNCH — stock tables are
+    // compiled during script load. Range 0-100 (0 removes the item from
+    // stock; values < 1.0 reduce below vanilla — the original's OnlyRaise
+    // guarantee only holds for >= 1.0).
+    // -------------------------------------------------------------------------
 
+    // Reads the persisted settings CDO during class-default execution — the
+    // same registration phase that builds the stock tables (cross-class CDO
+    // reads in default statements are vanilla-proven, e.g.
+    // Player/PlayerConfig.as, Camera/CameraConfig.as). VERIFIED IN-GAME
+    // (build 106, 2026-11-20): with sliders persisted at 5.0 a new game
+    // seeded Sharky at exactly 23x5 = 115 ore. Changed slider values apply
+    // from the NEXT game launch (stock tables are compiled during script
+    // load); a null/unloaded settings CDO falls back to the mod default 3.0.
+    // Item dispatch FIRST: non-target items must always return 1.0 (never
+    // touched), even on a null/unloaded settings CDO — the 3.0 fallback
+    // applies only to the three target items.
     float GetRichMerchantsMultiplier(TSubclassOf<UItemDefinition> item)
     {
-        if (item == UItMi_Orenugget::StaticClass())
-            return OreMultiplier;
-        if (item == UItAm_Arrow::StaticClass())
-            return ArrowMultiplier;
-        if (item == UItAm_Bolt::StaticClass())
-            return BoltMultiplier;
-        return 1.0f;
+        bool bIsOre = item == UItMi_Orenugget::StaticClass();
+        bool bIsArrow = item == UItAm_Arrow::StaticClass();
+        bool bIsBolt = item == UItAm_Bolt::StaticClass();
+        if (!bIsOre && !bIsArrow && !bIsBolt)
+            return 1.0f;
+
+        URichMerchantsUserSettings Settings = URichMerchantsUserSettings.DefaultObject;
+        if (Settings == nullptr)
+            return 3.0f;
+
+        float Value = 3.0f;
+        if (bIsOre)
+            Value = Settings.OreMultiplier.Value;
+        else if (bIsArrow)
+            Value = Settings.ArrowMultiplier.Value;
+        else
+            Value = Settings.BoltMultiplier.Value;
+
+        if (Value < 0.0f)
+            Value = 0.0f;
+        if (Value > 100.0f)
+            Value = 100.0f;
+        return Value;
     }
 
     // Replicates UTraderConfigBase::AddTraderItemAllDifficulties (the vanilla

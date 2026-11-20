@@ -14,8 +14,9 @@
 
 Multiplies every trader's stock of **ore** (`ItMi_Orenugget`), **arrows**
 (`ItAm_Arrow`) and **bolts** (`ItAm_Bolt`) — **default x3** — so merchants
-stay useful as buyers and sellers for longer. Configurable per item (edit
-three constants at the top of the script; the game recompiles on launch).
+stay useful as buyers and sellers for longer. Configurable per item via the
+in-game sliders (Settings → Game → Rich Merchants; changes apply from the
+next launch).
 
 ## How the native port works
 
@@ -53,26 +54,35 @@ consequences:
 | | UE4SS original | This port |
 |---|---|---|
 | New game | boosted at once (runtime patch) | boosted at once (config seed) |
-| **Existing save** | boosted at once | next chapter transition delivers its stock additions x3; accumulated stock stays vanilla (see below) |
+| **Existing save** | boosted at once | next chapter transition delivers its stock additions at your multiplier (x3 by default); accumulated stock stays vanilla (see below) |
 | Save purity | live state patched out-of-band every ~34 s | stock produced by the game's own config pipeline |
 | OnlyRaise (never reduce below current) | explicit `max(current, target)` | inherent for multipliers >= 1.0 (nothing is ever below vanilla); multipliers < 1.0 *do* reduce below vanilla |
 | Debug keys F6/F7, console `rm_apply`/`rm_status`, Verbose logging | yes (UE4SS log) | not ported (no UE4SS; the game writes no script logs) |
-| Config | `config.lua` | three `const float`s at the top of `RichMerchants/Script/RichMerchants/RichMerchantsStock.as` (game recompiles on launch) |
+| Config | `config.lua` | **in-game settings sliders** (Settings → Game → Rich Merchants); fallback defaults 3.0 in `Settings.as` |
 
-### Why there is no settings page (v1.1.0 experiment, withdrawn)
+### The settings page (v1.1.0) — how it finally works
 
-A settings page was built and tested in-game on build 106 and then removed:
-the sliders render and persist correctly (`GameUserSettings.ini`), but with
-all three set to 5.0 (persisted) a new game still seeded stock at the
-compile-time 3.0 values (Sharky: ore 69 / arrows 30 — user-verified). Stock
-tables are compiled into trader class defaults, and no script-reachable
-runtime path (including a `HandleReadyForPlay` re-base of the CDO
-`m_ItemsByDifficulty` maps) affects initial stock on this build. Shipping
-sliders that don't do anything would be dishonest, so the multipliers are
-compile-time constants instead. The experiment is preserved as
-`Settings.as.disabled` / `TraderStockRebase.as.disabled` with the evidence;
-the build-102 multi-mod settings crash itself **is fixed** on build 106
-(harness run 5), so other mods' settings pages coexist fine with this mod.
+Settings → Game → **Rich Merchants** — three sliders, top to bottom:
+**ore / arrows / bolts**, clamped to 0–100 when read, defaults 3.0. The rows render
+unlabeled on build 106 (only `Value` is script-bound on
+`FModUserSettingsFloat` — labels arrive with a future game build).
+
+The mechanism (verified in-game, build 106): the seed override **reads the
+persisted settings values during script-class registration** — the same
+phase in which the stock tables are built — so slider values multiply stock
+directly, with zero runtime writes. Every runtime application path was
+tested first and is provably dead on this build (see VALIDATION.md); the
+registration-time read is the one that works. Consequences, stated honestly:
+
+- **Changed sliders apply from the next game launch** (stock tables compile
+  during script load). A new game started in the same session as the change
+  uses the previous values.
+- **Existing saves**: unchanged semantics — the next chapter transition
+  delivers its stock additions at the new multiplier (predicted from engine
+  evidence, not yet observed in-game).
+- Multipliers < 1.0 reduce stock below vanilla; 0 sets the entry to 0
+  (expected to remove the item from stock; untested). The original's
+  OnlyRaise guarantee holds for values ≥ 1.0.
 
 ### Why existing saves can't be re-based mid-chapter (engine evidence)
 
@@ -90,7 +100,7 @@ The UE4SS original could reach the live trader instances
 ModKit's AngelScript deliberately cannot: `UTraderManager` binds only
 `GetCharacterOre`/`RemoveCharacterOre`, the trade widgets are view-only, and
 the save-data object is not script-reachable. So: **existing save → next
-chapter grants its additions x3; full x3 totals require a new game.** This
+chapter grants its additions at your multiplier (x3 by default; chapter restocks predicted from engine evidence, not yet observed); full boosted totals at your multiplier require a new game.** This
 is a platform limit, not a port shortcut.
 
 ## What's in here
@@ -98,8 +108,7 @@ is a platform limit, not a port shortcut.
 | Path | What it is |
 |---|---|
 | `RichMerchants/` | The mod package (Steam Workshop-ready) |
-| `RichMerchantsTestTool/` | Dev-only IngameTools panel: teleports to a trader to verify stock in-game (used for the Sharky verification; not for end users) |
-| `RichMerchants/Script/RichMerchants/Settings.as.disabled`, `TraderStockRebase.as.disabled` | The withdrawn settings experiment, kept with evidence (see below) |
+| `RichMerchantsTestTool/` | Dev-only IngameTools panel: teleports to a trader to verify stock in-game (used for the Sharky verifications; not for end users) |
 | `docs/vanilla-stock-table.md` | Every vanilla ore/arrow/bolt stock entry vs x3-boosted, extracted from the game's scripts |
 | `tools/extract_trader_stock.py` | Dev aid that generates the table (not shipped in the package) |
 | `RichMerchants/VALIDATION.md` | Compile + in-game validation evidence |
@@ -113,11 +122,12 @@ stack with another mod that multiplies the same stock (effects would chain).
 
 ## Status
 
-- **In-game verified** (build `Build106_CL176207`, human session 2026-11-20):
-  new game, Sharky chapter 1 = **ore 69 / arrows 30** (exactly 23x3 / 10x3 on
-  Standard) — the `ReplaceParentClass` seed override drives real trader
-  stock end-to-end. Compile-validation evidence (negative control, isolated,
-  default-boot and multi-mod runs) in `RichMerchants/VALIDATION.md`.
+- **In-game verified** (build `Build106_CL176207`, human sessions 2026-11-20):
+  new game, Sharky chapter 1 = **ore 69 / arrows 30** at default 3.0
+  multipliers (exactly 23x3 / 10x3 on Standard), and **ore 115** with the
+  settings sliders persisted at 5.0 (exactly 23x5) — the settings mechanism
+  is proven end-to-end. Compile-validation evidence (negative control,
+  isolated, default-boot and multi-mod runs) in `RichMerchants/VALIDATION.md`.
 - Known game-build-102 mod bugs and the build-106 settings findings are
   documented in `docs/g1r-modding-notes.md` of the
   [BalancedTraders-G1R](https://github.com/L-Sypniewski/BalancedTraders-G1R)
