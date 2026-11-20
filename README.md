@@ -14,8 +14,9 @@
 
 Multiplies every trader's stock of **ore** (`ItMi_Orenugget`), **arrows**
 (`ItAm_Arrow`) and **bolts** (`ItAm_Bolt`) — **default x3** — so merchants
-stay useful as buyers and sellers for longer. Configurable per item (edit
-three constants at the top of the script; the game recompiles on launch).
+stay useful as buyers and sellers for longer. Configurable per item via the
+in-game sliders (Settings → Game → Rich Merchants; changes apply from the
+next launch).
 
 ## How the native port works
 
@@ -53,7 +54,7 @@ consequences:
 | | UE4SS original | This port |
 |---|---|---|
 | New game | boosted at once (runtime patch) | boosted at once (config seed) |
-| **Existing save** | boosted at once | next chapter transition delivers its stock additions x3; accumulated stock stays vanilla (see below) |
+| **Existing save** | boosted at once | next chapter transition delivers its stock additions at your multiplier (x3 by default); accumulated stock stays vanilla (see below) |
 | Save purity | live state patched out-of-band every ~34 s | stock produced by the game's own config pipeline |
 | OnlyRaise (never reduce below current) | explicit `max(current, target)` | inherent for multipliers >= 1.0 (nothing is ever below vanilla); multipliers < 1.0 *do* reduce below vanilla |
 | Debug keys F6/F7, console `rm_apply`/`rm_status`, Verbose logging | yes (UE4SS log) | not ported (no UE4SS; the game writes no script logs) |
@@ -62,7 +63,7 @@ consequences:
 ### The settings page (v1.1.0) — how it finally works
 
 Settings → Game → **Rich Merchants** — three sliders, top to bottom:
-**ore / arrows / bolts**, range 0–100, defaults 3.0. The rows render
+**ore / arrows / bolts**, clamped to 0–100 when read, defaults 3.0. The rows render
 unlabeled on build 106 (only `Value` is script-bound on
 `FModUserSettingsFloat` — labels arrive with a future game build).
 
@@ -77,9 +78,11 @@ registration-time read is the one that works. Consequences, stated honestly:
   during script load). A new game started in the same session as the change
   uses the previous values.
 - **Existing saves**: unchanged semantics — the next chapter transition
-  delivers its stock additions at the new multiplier.
-- Multipliers < 1.0 reduce stock below vanilla; 0 removes the item from
-  stock. The original's OnlyRaise guarantee holds for values ≥ 1.0.
+  delivers its stock additions at the new multiplier (predicted from engine
+  evidence, not yet observed in-game).
+- Multipliers < 1.0 reduce stock below vanilla; 0 sets the entry to 0
+  (expected to remove the item from stock; untested). The original's
+  OnlyRaise guarantee holds for values ≥ 1.0.
 
 ### Why existing saves can't be re-based mid-chapter (engine evidence)
 
@@ -97,7 +100,7 @@ The UE4SS original could reach the live trader instances
 ModKit's AngelScript deliberately cannot: `UTraderManager` binds only
 `GetCharacterOre`/`RemoveCharacterOre`, the trade widgets are view-only, and
 the save-data object is not script-reachable. So: **existing save → next
-chapter grants its additions x3; full x3 totals require a new game.** This
+chapter grants its additions at your multiplier (x3 by default; chapter restocks predicted from engine evidence, not yet observed); full boosted totals at your multiplier require a new game.** This
 is a platform limit, not a port shortcut.
 
 ## What's in here

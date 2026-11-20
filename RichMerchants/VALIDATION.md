@@ -46,7 +46,7 @@ with `UTraderConfigBase`, and all three packages compiled together cleanly.
 | P5 | `UUClassFunctionLibrary::FindClassFromName(n"USharkyTraderConfig")` alone | 3 | **the `UUClassFunctionLibrary::` receiver does not compile** — shipped scripts use `UClass::` receivers (`UClass::GetAllSubclassesOf(...)`, `UClass::FindAllClassesInheritingFrom(...)`) |
 | P6 | settings CDO via `StaticClass().Get().DefaultObject` + Cast | 3 | **`.Get()` (→ `UClass`) has no `.DefaultObject`** — `.DefaultObject` is a `TSubclassOf` property; `UClassName.DefaultObject` directly works |
 
-Final v1.1.0 design (shipped): the seed override captures every vanilla stock entry into a per-CDO `TArray` while class defaults execute; the subsystem walks `UClass::GetAllSubclassesOf(UTraderConfigBase::StaticClass())`, reads `URichMerchantsUserSettings.DefaultObject`, and re-bases `m_ItemsByDifficulty` entries to `RoundToInt(RoundToInt(base x difficultyMult) x setting)` — no name lookups, no baked tables. Also fixed via the in-game error screen (human-read diagnostic): `DrawImGuiWindow` in a `UIngameTool` subclass requires `UFUNCTION(BlueprintOverride)` ("A function with the same name and parameters already exists in C++").
+First v1.1.0 candidate (v1 — later WITHDRAWN): the seed override captures every vanilla stock entry into a per-CDO `TArray` while class defaults execute; a subsystem walks `UClass::GetAllSubclassesOf(UTraderConfigBase::StaticClass())`, reads `URichMerchantsUserSettings.DefaultObject`, and re-bases `m_ItemsByDifficulty` entries to `RoundToInt(RoundToInt(base x difficultyMult) x setting)`. The shipped design is the v3 registration-time read (see the IN-GAME VERIFICATION section). Also fixed via the in-game error screen (human-read diagnostic): `DrawImGuiWindow` in a `UIngameTool` subclass requires `UFUNCTION(BlueprintOverride)` ("A function with the same name and parameters already exists in C++").
 
 ### IN-GAME VERIFICATION (2026-11-20, human sessions, build 106)
 
@@ -85,9 +85,10 @@ Final v1.1.0 design (shipped): the seed override captures every vanilla stock en
 | v2 | `HandleNewGameStarted` + `HandleReadyForPlay` re-issuing captured vanilla entries through native `UTraderConfig::AddTraderItem` on trader CDOs (guarded once-per-world) | **dead** — same 69/30 outcome; post-registration native calls are ignored by the stock generator |
 | v3 (shipped) | seed override reads the settings CDO **during class-default execution** (cross-class CDO reads in default statements are vanilla-proven: `Player/PlayerConfig.as`, `Camera/CameraConfig.as`) | **works** — 115 = 23 x 5 with sliders persisted at 5.0 |
 
-Both dead variants are preserved on the `archive/settings-v2` branch; the
-plan and decision tree for v3 are in `.plans/richmerchants-settings-v3.md`
-(local, gitignored).
+v2 is preserved at the tip of the `archive/settings-v2` branch, v1 (the
+`.as.disabled` pair) in that branch's parent commit; the v3 plan and
+decision tree are in `.plans/richmerchants-settings-v3.md` (local,
+gitignored).
 
 ### Engine facts established during this port (evidence: `Binds.Cache` + vanilla sources)
 
@@ -121,6 +122,10 @@ Proven by the runs above and the 2026-11-20 human sessions:
   vanilla), alone and alongside two other enabled mods.
 - The negative control proves the harness would have caught a script error
   in exactly this package shape.
+- **Settings drive stock — human-verified in-game (v1.1.0 mechanism)**:
+  sliders persisted at 5.0 → new-game Sharky ore exactly 23x5 = **115**
+  (registration-time read of the settings CDO; see the settings history
+  table below).
 - **Runtime dispatch — human-verified in-game**: the 30 vanilla
   trader-config classes' `default AddTraderItemAllDifficulties(...)`
   statements dispatch through the `ReplaceParentClass` override; Sharky's

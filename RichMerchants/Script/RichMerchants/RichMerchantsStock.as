@@ -62,21 +62,28 @@ class UTraderConfigBase_RichMerchants : UTraderConfigBase
     // seeded Sharky at exactly 23x5 = 115 ore. Changed slider values apply
     // from the NEXT game launch (stock tables are compiled during script
     // load); a null/unloaded settings CDO falls back to the mod default 3.0.
+    // Item dispatch FIRST: non-target items must always return 1.0 (never
+    // touched), even on a null/unloaded settings CDO — the 3.0 fallback
+    // applies only to the three target items.
     float GetRichMerchantsMultiplier(TSubclassOf<UItemDefinition> item)
     {
+        bool bIsOre = item == UItMi_Orenugget::StaticClass();
+        bool bIsArrow = item == UItAm_Arrow::StaticClass();
+        bool bIsBolt = item == UItAm_Bolt::StaticClass();
+        if (!bIsOre && !bIsArrow && !bIsBolt)
+            return 1.0f;
+
         URichMerchantsUserSettings Settings = URichMerchantsUserSettings.DefaultObject;
         if (Settings == nullptr)
             return 3.0f;
 
-        float Value = 1.0f;
-        if (item == UItMi_Orenugget::StaticClass())
+        float Value = 3.0f;
+        if (bIsOre)
             Value = Settings.OreMultiplier.Value;
-        else if (item == UItAm_Arrow::StaticClass())
+        else if (bIsArrow)
             Value = Settings.ArrowMultiplier.Value;
-        else if (item == UItAm_Bolt::StaticClass())
-            Value = Settings.BoltMultiplier.Value;
         else
-            return 1.0f;
+            Value = Settings.BoltMultiplier.Value;
 
         if (Value < 0.0f)
             Value = 0.0f;
