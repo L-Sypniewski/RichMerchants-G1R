@@ -60,12 +60,15 @@ consequences:
 | Debug keys F6/F7, console `rm_apply`/`rm_status`, Verbose logging | yes (UE4SS log) | not ported (no UE4SS; the game writes no script logs) |
 | Config | `config.lua` | **in-game settings sliders** (Settings → Game → Rich Merchants); fallback defaults 3.0 in `Settings.as` |
 
-### The settings page (v1.1.0) — how it finally works
+### The settings page (v1.2.0) — how it finally works
 
-Settings → Game → **Rich Merchants** — three sliders, top to bottom:
-**ore / arrows / bolts**, clamped to 0–100 when read, defaults 3.0. The rows render
-unlabeled on build 106 (only `Value` is script-bound on
-`FModUserSettingsFloat` — labels arrive with a future game build).
+Settings → Game → **Rich Merchants** — three labeled sliders, top to bottom:
+**ore / arrows / bolts** (labeled in English and Polish; every other language
+falls back to English via the game's language sets). Slider range 1.0–100.0,
+step 0.5, defaults 3.0. (The rich `FModUserSettingsFloat` ctor args —
+`DisplayText`/`MinValue`/`MaxValue`/`StepSize` — compile and label rows on
+build 106; the binding cache's property listing does not reflect constructor
+arguments.)
 
 The mechanism (verified in-game, build 106): the seed override **reads the
 persisted settings values during script-class registration** — the same
@@ -80,9 +83,10 @@ registration-time read is the one that works. Consequences, stated honestly:
 - **Existing saves**: unchanged semantics — the next chapter transition
   delivers its stock additions at the new multiplier (predicted from engine
   evidence, not yet observed in-game).
-- Multipliers < 1.0 reduce stock below vanilla; 0 sets the entry to 0
-  (expected to remove the item from stock; untested). The original's
-  OnlyRaise guarantee holds for values ≥ 1.0.
+- The slider minimum is 1.0, so the OnlyRaise guarantee (never below
+  vanilla) holds for everything the UI can set; sub-1.0 values are only
+  possible by hand-editing `GameUserSettings.ini` (a code-side clamp still
+  applies there).
 
 ### Why existing saves can't be re-based mid-chapter (engine evidence)
 

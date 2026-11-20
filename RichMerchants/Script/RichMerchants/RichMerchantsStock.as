@@ -45,13 +45,12 @@ class UTraderConfigBase_RichMerchants : UTraderConfigBase
 {
     // ---- CONFIGURATION ------------------------------------------------------
     // Multipliers live in the in-game settings: Settings -> Game ->
-    // "Rich Merchants" — three sliders, top to bottom: ore / arrows / bolts
-    // (unlabeled on build 106; only `Value` is script-bound on
-    // FModUserSettingsFloat). Defaults 3.0 each (the original mod's values).
-    // CHANGED VALUES APPLY FROM THE NEXT GAME LAUNCH — stock tables are
-    // compiled during script load. Range 0-100 (0 removes the item from
-    // stock; values < 1.0 reduce below vanilla — the original's OnlyRaise
-    // guarantee only holds for >= 1.0).
+    // "Rich Merchants" — three labeled sliders (EN/PL, EN fallback), top to
+    // bottom: ore / arrows / bolts. Defaults 3.0 each (the original mod's
+    // values). CHANGED VALUES APPLY FROM THE NEXT GAME LAUNCH — stock
+    // tables are compiled during script load. Slider range 1.0-100 (step
+    // 0.5); the [0,100] read-time clamp below remains as a guard for
+    // hand-edited GameUserSettings.ini values.
     // -------------------------------------------------------------------------
 
     // Reads the persisted settings CDO during class-default execution — the

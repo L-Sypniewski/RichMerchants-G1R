@@ -102,9 +102,17 @@ gitignored).
   trading widgets (`UTradingBalance*`) are view-only; the save-data object
   has no script-accessible holder. Live trader stock is therefore NOT
   patchable from AngelScript — the UE4SS original's main advantage.
-- `FModUserSettingsFloat` is bound on this build but exposes **only
-  `Value`** (no `DefaultValue`/`DisplayText`/`MinValue`/… — the richer
-  ctor args in current ModKit examples target a newer build).
+- **Settings-row labels work on build 106** (corrected 2026-11-20): the
+  rich `FModUserSettingsFloat` ctor args (`DefaultValue`/`DisplayText`/
+  `MinValue`/`MaxValue`/`StepSize`, the ModKit Example-Settings form)
+  compile AND label the rows (compile probe exit 124; labels + EN/PL
+  localization visually confirmed in-game by the user). The Binds.Cache
+  property listing (only `Value`) does NOT reflect what the constructor
+  accepts — never infer ctor-arg support from property listings. An earlier
+  "unlabeled platform limit" claim derived from that inference was wrong.
+  `LocText("<TextID>")` localizes labels through the package TextDB
+  (`Story/Conversation/text/*.textdb.yaml` + `Config/Game.ini` mount point),
+  with automatic fallback to english via the game's language sets.
 - Useful reflection/class helpers — VERIFIED FORMS (build 106):
   `UClass::GetAllSubclassesOf(BaseClass)` and
   `UClass::FindAllClassesInheritingFrom(BaseClass)` (receiver must be
