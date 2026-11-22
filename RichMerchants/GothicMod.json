@@ -2,7 +2,7 @@
 	"name": "RichMerchants",
 	"title": "Rich Merchants - More Ore, Arrows & Bolts (native port)",
 	"author": "L-Sypniewski (native port). Original mod: tailwindtom",
-	"description": "Every trader carries 3x more ore, arrows and bolts - configurable 1x-100x with in-game sliders (Settings, Game, Rich Merchants) - so merchants stay useful buyers and sellers all game long. Covers every trader, chapter restock and difficulty. Native AngelScript port of Rich Merchants by tailwindtom (Nexus Mods #161).",
+	"description": "Make every trader as rich as you want: multiply ore, arrows and bolts by anything from 1x to 100x on in-game sliders (default 3x) - merchants stay useful buyers and sellers all game long. Covers every trader, chapter restock and difficulty. Native AngelScript port of Rich Merchants by tailwindtom (Nexus Mods #161).",
 	"projectWebsiteURL": "https://github.com/L-Sypniewski/RichMerchants-G1R",
 	"modVersion": "1.2.0",
 	"loadOrder": "normal"
