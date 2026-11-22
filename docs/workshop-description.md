@@ -2,29 +2,46 @@
 
 > Attribution is mandatory in this text — it credits the original mod and
 > author. Do not publish the Workshop item without this banner.
+> Steam Workshop renders BBCode ([h1], [b], [list], [url=]).
 
 ---
 
-**Rich Merchants — native port**
+[h1]Rich Merchants — native port[/h1]
 
-Every trader in the colony now carries **3× ore, arrows and bolts** (configurable 1×–100×) — merchants stay useful as buyers and sellers for the whole game.
+Every trader carries 3× more [b]ore[/b], [b]arrows[/b] and [b]bolts[/b] — merchants stay useful as buyers and sellers all game long.
 
-**Features**
-- Multiplies the stock of **ore** (a trader's buying money), **arrows** and **bolts** for every trader, every chapter restock, and every difficulty preset
-- Configurable in-game: **Settings → Game → Rich Merchants** — three labeled sliders (English & Polish; other languages fall back to English). Changed values apply from the next launch
-- Exact math parity with the original mod (`round(vanilla × difficulty × multiplier)`)
-- New games get the boost immediately; existing saves receive it at their next chapter transition
+[b]Why[/b]
+A trader's ore pile is his buying money — and vanilla amounts run dry fast. By mid-game you're hauling loot nobody can pay for, and archers burn through the odd dozen arrows merchants stock. This mod multiplies exactly those three stock types and leaves the rest of the economy untouched.
 
-**Credits**
+[b]Features[/b]
+[list]
+[*]More [b]ore[/b] (a trader's buying money), [b]arrows[/b] and [b]bolts[/b] at every trader in the game
+[*]Covers all traders, all chapter restocks and all difficulty presets (Easy/Hard scaling still applies, like vanilla)
+[*][b]Configurable in-game:[/b] Settings → Game → Rich Merchants — three labeled sliders (English & Polish; other languages fall back to English), 1×–100×, default 3×
+[*]Exact math: every stock entry is multiplied against the game's own vanilla baseline — never stacks, never compounds across chapters, reloads or updates
+[*]Pure official-ModKit AngelScript: no UE4SS, no .pak, no game files modified
+[/list]
 
-This is a native AngelScript (official ModKit) port of **Rich Merchants** by
-**tailwindtom** —
-[Nexus Mods #161](https://www.nexusmods.com/gothic1remake/mods/161) (v1.0.2).
-The mod concept, defaults and gameplay design are tailwindtom's work. This
-port contains none of the original code — it is a clean-room reimplementation
-published with attribution. Thanks for the original mod!
+[b]How it works — and what it does NOT change[/b]
+[list]
+[*]The mod scales the game's per-chapter trader stock tables while scripts load. Chapter 4 under this mod = exactly 3× vanilla chapter 4 — linearly, at any chapter, forever.
+[*]Prices, trader inventories (weapons, potions, …) and the whole dynamic economy are untouched — pair it freely with price/economy mods.
+[*]Nothing is written into your saves. Safe to add, update or remove at any time.
+[/list]
 
-**Source & issues**: <https://github.com/L-Sypniewski/RichMerchants-G1R>
+[b]Settings apply from the next game launch[/b] (stock tables are built during script load). New games get the boost immediately; an existing save receives its next chapter restock at your multiplier.
 
-**Compatibility**: pure script mod — no .pak, no game-file edits. Compatible
-with other mods; don't stack with another trader-stock multiplier.
+[b]Compatibility[/b]
+[list]
+[*]Works with existing saves — safe to add or remove mid-playthrough.
+[*]The game may note "save was made with a different modlist" after adding/removing — Continue anyway is safe.
+[*]Don't stack with another mod that multiplies the same trader stock.
+[/list]
+
+[b]Installation[/b]
+Subscribe — the game installs and updates it for you. Enable it in the mod manager (launch the game with [i]-ModManagementUI[/i], or via Steam launch options) if it isn't already.
+
+[h1]Credits[/h1]
+This is a native AngelScript (official ModKit) port of [b]Rich Merchants[/b] by [b]tailwindtom[/b] — [url=https://www.nexusmods.com/gothic1remake/mods/161]Nexus Mods #161[/url] (v1.0.2). The mod concept, defaults and gameplay design are tailwindtom's work. This port contains none of the original code — it is a clean-room reimplementation published with attribution. Thanks for the original mod!
+
+[b]Source, issues & full validation evidence:[/b] [url=https://github.com/L-Sypniewski/RichMerchants-G1R]github.com/L-Sypniewski/RichMerchants-G1R[/url]
