@@ -16,7 +16,7 @@ repo (see AGENTS notes); override with --sources.
 Rounding replicates the shipped AngelScript exactly:
     vanilla(difficulty) = RoundToInt(count * difficultyCategoryMultiplier)
     boosted(difficulty) = RoundToInt(vanilla(difficulty) * multiplier)
-where RoundToInt(x) = int(x + 0.5) for x >= 0 — identical to the Lua mod's
+where RoundToInt(x) = int(x + 0.5) for x >= 0 - identical to the Lua mod's
 math.floor(default * mult + 0.5) applied to the live per-difficulty default.
 """
 

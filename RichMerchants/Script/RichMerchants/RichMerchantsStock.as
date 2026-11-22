@@ -1,19 +1,19 @@
-// RichMerchants — native AngelScript port of the UE4SS Lua mod
+// RichMerchants - native AngelScript port of the UE4SS Lua mod
 // "Rich Merchants More Ore - Arrows - Bolts - Configurable"
 // by tailwindtom (Nexus Mods #161, v1.0.2):
 // https://www.nexusmods.com/gothic1remake/mods/161
 //
 // WHAT IT DOES (identical goals to the original):
 //   Multiplies every trader's stock of ore (ItMi_Orenugget), arrows
-//   (ItAm_Arrow) and bolts (ItAm_Bolt) — default x3 — so merchants stay
+//   (ItAm_Arrow) and bolts (ItAm_Bolt) - default x3 - so merchants stay
 //   useful as buyers and sellers for longer.
 //
 // HOW IT WORKS:
 //   Every vanilla trader config (UBaalKaganTraderConfig, USharkyTraderConfig,
-//   …, UQuestDealerTraderConfig — 30 script classes in total, 28 of which
+//   …, UQuestDealerTraderConfig - 30 script classes in total, 28 of which
 //   carry ore/arrow/bolt stock) derives from the SCRIPT class
-//   UTraderConfigBase, and stocks every item — including the chapter-gated
-//   restocks ("OnWorldStart", "StoryG1R_EnteredChapter_N") — through its
+//   UTraderConfigBase, and stocks every item - including the chapter-gated
+//   restocks ("OnWorldStart", "StoryG1R_EnteredChapter_N") - through its
 //   helper UTraderConfigBase::AddTraderItemAllDifficulties(item, count, event).
 //
 //   This class uses ReplaceParentClass (inheritance injection) to take
@@ -21,7 +21,7 @@
 //   inherits from THIS class, so its stock entries run through the override
 //   below, which scales the count for the three target items before handing
 //   off to the vanilla per-difficulty math. One hook covers all traders,
-//   all chapters and all difficulty presets — no vanilla tables are copied
+//   all chapters and all difficulty presets - no vanilla tables are copied
 //   and nothing outside these three item classes is touched.
 //
 // MATH (matches the original Lua bit-for-bit):
@@ -34,7 +34,7 @@
 //
 // SEMANTIC DIFFERENCE vs the UE4SS original (config seed vs live patch):
 //   The Lua mod rewrote the LIVE stock maps of already-instantiated traders a
-//   few seconds after each level load — existing saves got boosted stock
+//   few seconds after each level load - existing saves got boosted stock
 //   immediately. This port scales the stock CONFIG the game seeds traders
 //   from: new games get boosted stock immediately; EXISTING saves see the
 //   boost when the game next (re)builds a trader's stock (world start / chapter
@@ -45,15 +45,15 @@ class UTraderConfigBase_RichMerchants : UTraderConfigBase
 {
     // ---- CONFIGURATION ------------------------------------------------------
     // Multipliers live in the in-game settings: Settings -> Game ->
-    // "Rich Merchants" — three labeled sliders (EN/PL, EN fallback), top to
+    // "Rich Merchants" - three labeled sliders (EN/PL, EN fallback), top to
     // bottom: ore / arrows / bolts. Defaults 3.0 each (the original mod's
-    // values). CHANGED VALUES APPLY FROM THE NEXT GAME LAUNCH — stock
+    // values). CHANGED VALUES APPLY FROM THE NEXT GAME LAUNCH - stock
     // tables are compiled during script load. Slider range 1.0-100 (step
     // 0.5); the [0,100] read-time clamp below remains as a guard for
     // hand-edited GameUserSettings.ini values.
     // -------------------------------------------------------------------------
 
-    // Reads the persisted settings CDO during class-default execution — the
+    // Reads the persisted settings CDO during class-default execution - the
     // same registration phase that builds the stock tables (cross-class CDO
     // reads in default statements are vanilla-proven, e.g.
     // Player/PlayerConfig.as, Camera/CameraConfig.as). VERIFIED IN-GAME
@@ -62,7 +62,7 @@ class UTraderConfigBase_RichMerchants : UTraderConfigBase
     // from the NEXT game launch (stock tables are compiled during script
     // load); a null/unloaded settings CDO falls back to the mod default 3.0.
     // Item dispatch FIRST: non-target items must always return 1.0 (never
-    // touched), even on a null/unloaded settings CDO — the 3.0 fallback
+    // touched), even on a null/unloaded settings CDO - the 3.0 fallback
     // applies only to the three target items.
     float GetRichMerchantsMultiplier(TSubclassOf<UItemDefinition> item)
     {
@@ -93,7 +93,7 @@ class UTraderConfigBase_RichMerchants : UTraderConfigBase
 
     // Replicates UTraderConfigBase::AddTraderItemAllDifficulties (the vanilla
     // difficulty math) with the mod's multiplier applied after the difficulty
-    // rounding — see MATH above. All called functions are inherited vanilla
+    // rounding - see MATH above. All called functions are inherited vanilla
     // members; AddTraderItem is the native UTraderConfig entry point.
     void AddTraderItemAllDifficulties(TSubclassOf<UItemDefinition> item, int count, FString event) override
     {

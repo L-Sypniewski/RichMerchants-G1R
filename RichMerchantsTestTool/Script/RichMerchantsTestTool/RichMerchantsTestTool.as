@@ -1,4 +1,4 @@
-// RichMerchantsTestTool — DEV-ONLY helper (not part of the shipped mod
+// RichMerchantsTestTool - DEV-ONLY helper (not part of the shipped mod
 // package; not for Steam Workshop). One IngameTools button that teleports
 // the player next to a trader so the Rich Merchants stock boost can be
 // verified quickly on a fresh new game.
@@ -6,12 +6,12 @@
 // Teleport recipe copied verbatim from the live-verified EconomyProbe tool
 // (BalancedTraders-G1R): button schedules a 0.1 s timer; the UFUNCTION timer
 // callback runs on the game thread OUTSIDE the ImGui draw loop (teleports
-// from the draw context hard-freeze the game — proven on build 106) and uses
+// from the draw context hard-freeze the game - proven on build 106) and uses
 // the vanilla GASCharacterStateMixins idiom (floor trace + capsule half
 // height + CharacterState.Teleport).
 //
 // ImGui bindings available to mods are limited (Text/TextDisabled/Separator/
-// Button/Checkbox/SameLine) — only those are used. No #if WITH_IMGUI guard:
+// Button/Checkbox/SameLine) - only those are used. No #if WITH_IMGUI guard:
 // the define is never set for mod scripts (guard would strip the class).
 //
 // Launch required: -ingametools (plus -console for `ImGui.ToggleInput` if
@@ -24,7 +24,7 @@ class URichMerchantsTestTool : UIngameTool
 	default Title = "RM Test: Teleport";
 	default bIsWindowOpen = false;
 
-	FString LastStatus = "ready — start a NEW GAME, then click.";
+	FString LastStatus = "ready - start a NEW GAME, then click.";
 
 	FName TargetName = n"NC_ORG_Sharky_843";
 	FString TargetLabel = "Sharky (NC blacksmith)";
@@ -68,7 +68,7 @@ class URichMerchantsTestTool : UIngameTool
 
 		bool bMoved = PlayerCS.Teleport(SpotLocation, FRotator(0.0f, 0.0f, 0.0f));
 		LastStatus = bMoved
-			? f"teleported to {TargetLabel} — trade and check stock"
+			? f"teleported to {TargetLabel} - trade and check stock"
 			: "Teleport returned false (invalid target spot?)";
 	}
 
