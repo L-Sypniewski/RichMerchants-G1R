@@ -2,8 +2,15 @@
 	"name": "RichMerchants",
 	"title": "Rich Merchants - More Ore, Arrows & Bolts (native port)",
 	"author": "L-Sypniewski (native port). Original mod: tailwindtom",
-	"description": "Make every trader as rich as you want: multiply ore, arrows and bolts by anything from 1x to 100x on in-game sliders (default 3x) - merchants stay useful buyers and sellers all game long. Covers every trader, chapter restock and difficulty. New in 1.3.0: the 12 traders that never restock in vanilla (BaalKagan, Malon, Dexter, Santino, Viper and more) get vanilla-style chapter restocks too. Native AngelScript port of Rich Merchants by tailwindtom (Nexus Mods #161).",
 	"projectWebsiteURL": "https://github.com/L-Sypniewski/RichMerchants-G1R",
+	"description": "Make every trader as rich as you want: multiply ore, arrows and bolts by anything from 1x to 100x on in-game sliders (default 3x) - merchants stay useful buyers and sellers all game long. Covers every trader, chapter restock and difficulty. New in 1.3.0: the 12 traders that never restock in vanilla (BaalKagan, Malon, Dexter, Santino, Viper and more) get vanilla-style chapter restocks too. Native AngelScript port of Rich Merchants by tailwindtom (Nexus Mods #161).",
 	"modVersion": "1.3.0",
-	"loadOrder": "normal"
+	"metadata":
+	{
+		"SteamWorkshopID": "3844276160"
+	},
+	"scriptPreprocessorDefines": [],
+	"tags": [],
+	"loadOrder": "Normal",
+	"dependencies": []
 }
