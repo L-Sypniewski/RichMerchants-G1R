@@ -8,8 +8,7 @@ trader scripts verified content-identical to the G1R-Modkit sources
 `TradersGeneric.as`, `TradersData.as`).
 
 Method note: the shipping build writes no log files and opens no diagnostics
-port (established during the BalancedTraders port, see that repo's
-VALIDATION.md). Validation therefore uses exit-code semantics of
+port. Validation therefore uses exit-code semantics of
 `-as-exit-on-error`: **exit 3 = script compile error (game self-exits);
 still running at a `timeout` (exit 124) = clean compile**, calibrated here
 with a fresh negative control. The game was installed as a symlink at
@@ -24,15 +23,15 @@ launch, clean or failing.
 | 1 | **Negative control**: copy of the package as `RichMerchantsNegTest` with `const float OreMultiplier = "three";` (type error), run from `/tmp/opencode/g1r-negtest` via `-ModsDirectory` | `-as-exit-on-error -as-ignore-precompiled-data -Mods=RichMerchantsNegTest`, `Mods.ini` absent | **self-exited, exit 3** | harness compiles the mod's scripts and aborts on error - runs 2–4 meaningful |
 | 2 | RichMerchants (real, symlinked `G1R/Mods/RichMerchants`) | `-as-exit-on-error -as-ignore-precompiled-data -Mods=RichMerchants`, `Mods.ini` absent | alive at 240 s (**124**) | full-recompile path: `ReplaceParentClass` on `UTraderConfigBase` + function override compiles clean |
 | 3 | RichMerchants (real) | `-as-exit-on-error -Mods=RichMerchants` (no recompile flag), `Mods.ini` absent | alive at 240 s (**124**) | default boot path (precompiled vanilla + freshly compiled mod) also clean |
-| 4 | RichMerchants + **BalancedTraders + EconomyProbe** (multi-mod; the other two via `Mods.ini`) | `-as-exit-on-error -as-ignore-precompiled-data -Mods=RichMerchants` | alive ≥ 235 s (**124**) | coexists with other enabled packages (incl. BalancedTraders' own `ReplaceParentClass` uses); the settings page's multi-mod safety is proven separately by run 5 and by the 2026-11-20 interactive sessions |
+| 4 | RichMerchants + **two other enabled mods** (multi-mod; both via `Mods.ini`) | `-as-exit-on-error -as-ignore-precompiled-data -Mods=RichMerchants` | alive ≥ 235 s (**124**) | coexists with other enabled packages (incl. their own `ReplaceParentClass` uses); the settings page's multi-mod safety is proven separately by run 5 and by the 2026-11-20 interactive sessions |
 
-Run-4 note: BalancedTraders also uses `ReplaceParentClass` (on item
-classes) and EconomyProbe registers an IngameTools panel; neither interacts
+Run-4 note: one of the co-installed mods uses `ReplaceParentClass` (on item
+classes), the other registers an IngameTools panel; neither interacts
 with `UTraderConfigBase`, and all three packages compiled together cleanly.
 
 | # | Mod content | Flags / isolation | Result | Conclusion |
 |---|---|---|---|---|
-| 5 | **Settings-page probe** (2026-11-20): copy of the package as `RichMerchantsSettingsTest` + `UGothicModExt_UserSettings` page (3 x `FModUserSettingsFloat(Value = 3.0f)`), temp `-ModsDirectory` | `-as-exit-on-error -as-ignore-precompiled-data`, **BalancedTraders + EconomyProbe via `Mods.ini`** (the exact build-102 crash scenario, P7-P16) | alive ≥ 235 s (**124**) | **the build-102 "settings page + second mod" crash is fixed on build 106** - settings pages are multi-mod-safe again |
+| 5 | **Settings-page probe** (2026-11-20): copy of the package as `RichMerchantsSettingsTest` + `UGothicModExt_UserSettings` page (3 x `FModUserSettingsFloat(Value = 3.0f)`), temp `-ModsDirectory` | `-as-exit-on-error -as-ignore-precompiled-data`, **two other enabled mods via `Mods.ini`** (the exact build-102 crash scenario) | alive ≥ 235 s (**124**) | **the build-102 "settings page + second mod" crash is fixed on build 106** - settings pages are multi-mod-safe again |
 | 6 | **v1.1.0 first iteration** (Settings.as + TraderStockRebase.as with `UUClassFunctionLibrary::FindClassFromName` + baked table) | isolated, full recompile | **exit 3** | compile error - bisected below |
 | 7–12 | Bisection probes P2b/P3/P4/P5/P6 (temp packages) | same harness | see below | failures isolated to two engine quirks; two earlier probes (P1, P2) were invalid (probe-construction mistakes: dangling `ApplySettings()` call; dead code referencing removed locals) and are excluded |
 
