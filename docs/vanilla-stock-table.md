@@ -59,3 +59,25 @@ multiplier (exactly as in the shipped AngelScript override).
 | QuestDealer | ItAm_Arrow | CH1: 25→75 |
 
 Totals over all 28 traders, 115 stock entries: 3645 -> 10935 (x3.000).
+
+The game defines trader stock for exactly 30 traders - the `U*TraderConfig`
+classes (29 in `Script/Items/GenericItems/TradersGeneric.as`, plus
+`UQuestDealerTraderConfig` in `Script/LevelScripts/TradersData.as`); nothing
+else in the vanilla `Script/` tree defines trader stock. The two not listed
+above - Riordian (herbs, potions, alchemy ingredients) and Xardas (runes,
+scrolls, rings) - stock no ore nuggets, arrows or bolts, so there is nothing
+for the multipliers to scale. `DemoHunter` and `QuestDealer` are demo/quest
+configs rather than regular world merchants, but they carry ore/ammo and are
+boosted like the rest. Neither is bound to a regular world NPC:
+`UDemoHunterTraderConfig` has no `m_UniqueName` at all, and
+`UQuestDealerTraderConfig` binds to the demo NPC `Demo_None_Hunter_2202` (a
+`QuestDealer_JOINOC` story function in `StoryFunctions.as` is a developer
+test hook that force-starts the chapter-1 Old Camp quests).
+
+A "CH1" row is the initial `OnWorldStart` seed; "CH2"-"CH6" rows exist only
+where vanilla defines `StoryG1R_EnteredChapter_N` restock entries. 14 of the
+28 traders have no chapter events - BaalKagan, BaalIsidro, Malon, Silas,
+Jeremiah, Dexter, Graham, Mordrag, Alberto, Glen, Santino, Viper, plus the
+two demo configs - so their chapter-1 stock is everything they ever get: a
+single-row entry is complete, not truncated, and existing saves never gain
+boosted amounts from them (there is no later event that could fire).
