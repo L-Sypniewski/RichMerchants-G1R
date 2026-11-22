@@ -1,19 +1,19 @@
-# RichMerchants-G1R — native ModKit port
+# RichMerchants-G1R - native ModKit port
 
-> **Credit where it's due:** this repo is a native AngelScript port of
+> This repo is a native AngelScript port of
 > **Rich Merchants More Ore - Arrows - Bolts - Configurable** for
 > *Gothic 1 Remake* by **tailwindtom**
 > ([Nexus Mods #161](https://www.nexusmods.com/gothic1remake/mods/161),
 > v1.0.2, UE4SS Lua). The mod design, the default multipliers and every
 > gameplay decision are tailwindtom's work. This port contains **none of the
-> original code** — it is a clean-room reimplementation for the official G1R
+> original code** - it is a clean-room reimplementation for the official G1R
 > ModKit, published with attribution. If you are the original author and want
 > anything changed or removed, please open an issue.
 
 ## What it does
 
 Multiplies every trader's stock of **ore** (`ItMi_Orenugget`), **arrows**
-(`ItAm_Arrow`) and **bolts** (`ItAm_Bolt`) — **default x3** — so merchants
+(`ItAm_Arrow`) and **bolts** (`ItAm_Bolt`) - **default x3** - so merchants
 stay useful as buyers and sellers for longer. Configurable per item via the
 in-game sliders (Settings → Game → Rich Merchants; changes apply from the
 next launch).
@@ -22,8 +22,8 @@ next launch).
 
 All vanilla trader configs are *script* classes deriving from
 `UTraderConfigBase` (`Script/Items/GenericItems/TradersGeneric.as`,
-`Script/LevelScripts/TradersData.as`) and stock every item — including
-chapter-gated restocks (`"StoryG1R_EnteredChapter_N"`) — through one script
+`Script/LevelScripts/TradersData.as`) and stock every item - including
+chapter-gated restocks (`"StoryG1R_EnteredChapter_N"`) - through one script
 helper, `UTraderConfigBase::AddTraderItemAllDifficulties(item, count, event)`.
 
 The port is a single class using `ReplaceParentClass` (inheritance injection)
@@ -60,19 +60,19 @@ consequences:
 | Debug keys F6/F7, console `rm_apply`/`rm_status`, Verbose logging | yes (UE4SS log) | not ported (no UE4SS; the game writes no script logs) |
 | Config | `config.lua` | **in-game settings sliders** (Settings → Game → Rich Merchants); fallback defaults 3.0 in `Settings.as` |
 
-### The settings page (v1.2.0) — how it finally works
+### The settings page (v1.2.0) - how it finally works
 
-Settings → Game → **Rich Merchants** — three labeled sliders, top to bottom:
+Settings → Game → **Rich Merchants** - three labeled sliders, top to bottom:
 **ore / arrows / bolts** (labeled in English and Polish; every other language
 falls back to English via the game's language sets). Slider range 1.0–100.0,
-step 0.5, defaults 3.0. (The rich `FModUserSettingsFloat` ctor args —
-`DisplayText`/`MinValue`/`MaxValue`/`StepSize` — compile and label rows on
+step 0.5, defaults 3.0. (The rich `FModUserSettingsFloat` ctor args -
+`DisplayText`/`MinValue`/`MaxValue`/`StepSize` - compile and label rows on
 build 106; the binding cache's property listing does not reflect constructor
 arguments.)
 
 The mechanism (verified in-game, build 106): the seed override **reads the
-persisted settings values during script-class registration** — the same
-phase in which the stock tables are built — so slider values multiply stock
+persisted settings values during script-class registration** - the same
+phase in which the stock tables are built - so slider values multiply stock
 directly, with zero runtime writes. Every runtime application path was
 tested first and is provably dead on this build (see VALIDATION.md); the
 registration-time read is the one that works. Consequences, stated honestly:
@@ -80,7 +80,7 @@ registration-time read is the one that works. Consequences, stated honestly:
 - **Changed sliders apply from the next game launch** (stock tables compile
   during script load). A new game started in the same session as the change
   uses the previous values.
-- **Existing saves**: unchanged semantics — the next chapter transition
+- **Existing saves**: unchanged semantics - the next chapter transition
   delivers its stock additions at the new multiplier (predicted from engine
   evidence, not yet observed in-game).
 - The slider minimum is 1.0, so the OnlyRaise guarantee (never below
@@ -94,7 +94,7 @@ The game **serializes trader stock into the save**: every trader's current
 and baseline stock (`FTraderData.m_Items` / `m_DefaultItems`) plus the
 already-fired restock events (`m_GeneratedEvents`) are stored in
 `GameStateDataBaseSaveData.m_Traders`. On load, live stock is *restored from
-the save*, not rebuilt from config — so a config-side boost only enters an
+the save*, not rebuilt from config - so a config-side boost only enters an
 existing save when a not-yet-generated restock event fires (i.e. the next
 chapter transition), and it boosts that chapter's **additions**, not the
 accumulated total.
@@ -119,7 +119,7 @@ is a platform limit, not a port shortcut.
 
 ## Installation
 
-Steam Workshop (preferred) — or clone/copy `RichMerchants/` into the game's
+Steam Workshop (preferred) - or clone/copy `RichMerchants/` into the game's
 `G1R/Mods/` directory and enable it in the in-game Mod Manager. Requires the
 game's official mod support (ModKit); conflicts with nothing, but do **not**
 stack with another mod that multiplies the same stock (effects would chain).
@@ -131,7 +131,7 @@ stack with another mod that multiplies the same stock (effects would chain).
 - **In-game verified** (build `Build106_CL176207`, human sessions 2026-11-20):
   new game, Sharky chapter 1 = **ore 69 / arrows 30** at default 3.0
   multipliers (exactly 23x3 / 10x3 on Standard), and **ore 115** with the
-  settings sliders persisted at 5.0 (exactly 23x5) — the settings mechanism
+  settings sliders persisted at 5.0 (exactly 23x5) - the settings mechanism
   is proven end-to-end. Compile-validation evidence (negative control,
   isolated, default-boot and multi-mod runs) in `RichMerchants/VALIDATION.md`.
 - Known game-build-102 mod bugs and the build-106 settings findings are

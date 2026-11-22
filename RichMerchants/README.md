@@ -1,4 +1,4 @@
-# Rich Merchants — native port (Gothic 1 Remake ModKit)
+# Rich Merchants - native port (Gothic 1 Remake ModKit)
 
 > Native AngelScript port of **Rich Merchants More Ore - Arrows - Bolts -
 > Configurable** by **tailwindtom**
@@ -15,12 +15,12 @@ leaves every other stock item and all dynamic pricing untouched.
 
 ## Configure
 
-In-game: **Settings → Game → "Rich Merchants"** — three labeled sliders,
+In-game: **Settings → Game → "Rich Merchants"** - three labeled sliders,
 top to bottom: **ore / arrows / bolts** (English and Polish labels; other
 languages fall back to English). Slider range 1.0–100.0, step 0.5,
 defaults 3.0.
 
-- **Changed values apply from the next game launch** — stock tables are
+- **Changed values apply from the next game launch** - stock tables are
   compiled during script load, so a new game started in the same session as
   the change uses the previous values.
 - The slider minimum is 1.0 (never below vanilla). Sub-1.0 values are only
@@ -42,7 +42,7 @@ defaults 3.0.
 - **New games** get boosted stock immediately. **Existing saves**: trader
   stock is serialized *inside the save* (current + baseline + fired events),
   so an existing save keeps its accumulated vanilla stock until the next
-  chapter transition — that chapter's additions then arrive x3. Full x3
+  chapter transition - that chapter's additions then arrive x3. Full x3
   totals need a new game. (The UE4SS original patched live memory and could
   re-base a running save; the ModKit exposes no accessor to live trader
   state.)
