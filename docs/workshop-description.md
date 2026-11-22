@@ -8,14 +8,14 @@
 
 [h1]Rich Merchants — native port[/h1]
 
-Every trader carries 3× more [b]ore[/b], [b]arrows[/b] and [b]bolts[/b] — merchants stay useful as buyers and sellers all game long.
+Make every trader as rich as you want: multiply their [b]ore[/b], [b]arrows[/b] and [b]bolts[/b] by [b]anything from 1× to 100×[/b], configured on [b]in-game sliders[/b] (default 3×). Merchants stay useful as buyers and sellers all game long.
 
 [b]Why[/b]
 A trader's ore pile is his buying money — and vanilla amounts run dry fast. By mid-game you're hauling loot nobody can pay for, and archers burn through the odd dozen arrows merchants stock. This mod multiplies exactly those three stock types and leaves the rest of the economy untouched.
 
 [b]Features[/b]
 [list]
-[*]More [b]ore[/b] (a trader's buying money), [b]arrows[/b] and [b]bolts[/b] at every trader in the game
+[*]More [b]ore[/b] (a trader's buying money), [b]arrows[/b] and [b]bolts[/b] at every trader in the game — per-item multipliers, default 3×
 [*]Covers all traders, all chapter restocks and all difficulty presets (Easy/Hard scaling still applies, like vanilla)
 [*][b]Configurable in-game:[/b] Settings → Game → Rich Merchants — three labeled sliders (English & Polish; other languages fall back to English), 1×–100×, default 3×
 [*]Exact math: every stock entry is multiplied against the game's own vanilla baseline — never stacks, never compounds across chapters, reloads or updates
@@ -24,7 +24,7 @@ A trader's ore pile is his buying money — and vanilla amounts run dry fast. By
 
 [b]How it works — and what it does NOT change[/b]
 [list]
-[*]The mod scales the game's per-chapter trader stock tables while scripts load. Chapter 4 under this mod = exactly 3× vanilla chapter 4 — linearly, at any chapter, forever.
+[*]The mod scales the game's per-chapter trader stock tables while scripts load. chapter 4 under this mod = exactly your-multiplier × vanilla chapter 4 (3× by default) — linearly, at any chapter, forever, no compounding.
 [*]Prices, trader inventories (weapons, potions, …) and the whole dynamic economy are untouched — pair it freely with price/economy mods.
 [*]Nothing is written into your saves. Safe to add, update or remove at any time.
 [/list]
