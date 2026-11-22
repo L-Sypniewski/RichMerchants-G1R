@@ -134,10 +134,6 @@ stack with another mod that multiplies the same stock (effects would chain).
   settings sliders persisted at 5.0 (exactly 23x5) - the settings mechanism
   is proven end-to-end. Compile-validation evidence (negative control,
   isolated, default-boot and multi-mod runs) in `RichMerchants/VALIDATION.md`.
-- Known game-build-102 mod bugs and the build-106 settings findings are
-  documented in `docs/g1r-modding-notes.md` of the
-  [BalancedTraders-G1R](https://github.com/L-Sypniewski/BalancedTraders-G1R)
-  repository.
 
 ## License
 

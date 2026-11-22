@@ -3,8 +3,8 @@
 // the player next to a trader so the Rich Merchants stock boost can be
 // verified quickly on a fresh new game.
 //
-// Teleport recipe copied verbatim from the live-verified EconomyProbe tool
-// (BalancedTraders-G1R): button schedules a 0.1 s timer; the UFUNCTION timer
+// Teleport recipe (live-verified on build 106): button schedules a 0.1 s
+// timer; the UFUNCTION timer
 // callback runs on the game thread OUTSIDE the ImGui draw loop (teleports
 // from the draw context hard-freeze the game - proven on build 106) and uses
 // the vanilla GASCharacterStateMixins idiom (floor trace + capsule half
