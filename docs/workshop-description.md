@@ -26,7 +26,7 @@ A trader's ore pile is his buying money - and vanilla amounts run dry fast. By m
 [list]
 [*]The mod scales the game's per-chapter trader stock tables while scripts load. chapter 4 under this mod = exactly your-multiplier × vanilla chapter 4 (3× by default) - linearly, at any chapter, forever, no compounding.
 [*]Prices, trader inventories (weapons, potions, …) and the whole dynamic economy are untouched - pair it freely with price/economy mods.
-[*]Nothing is written into your saves. Safe to add, update or remove at any time.
+[*]The mod never touches your saves - safe to add, update or remove at any time. (Saves made with it keep the stock they captured; after removal, future chapter restocks return to vanilla scale.)
 [/list]
 
 [b]Settings apply from the next game launch[/b] (stock tables are built during script load). New games get the boost immediately; an existing save receives its next chapter restock at your multiplier.
