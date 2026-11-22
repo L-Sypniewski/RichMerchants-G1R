@@ -13,6 +13,12 @@ Multiplies every trader's stock of **ore**, **arrows** and **bolts**
 Covers all traders, all chapter restocks and all difficulty presets, and
 leaves every other stock item and all dynamic pricing untouched.
 
+Since v1.3.0, the 12 traders that never restock in vanilla (BaalKagan,
+BaalIsidro, Malon, Silas, Jeremiah, Dexter, Graham, Mordrag, Alberto, Glen,
+Santino, Viper) also get vanilla-style chapter restocks (CH2-CH6, each
+granting roughly a third to a half of their initial stock, matching the
+vanilla restock curve).
+
 ## Configure
 
 In-game: **Settings → Game → "Rich Merchants"** - three labeled sliders,
@@ -46,6 +52,9 @@ defaults 3.0.
   totals need a new game. (The UE4SS original patched live memory and could
   re-base a running save; the ModKit exposes no accessor to live trader
   state.)
+- The v1.3.0 restocks for the 12 vanilla no-restock traders follow the same
+  rule: new games replenish from chapter 2 onward; an existing save picks
+  them up from its next chapter transition.
 
 Full vanilla-vs-boosted reference table and port notes:
 <https://github.com/L-Sypniewski/RichMerchants-G1R>
