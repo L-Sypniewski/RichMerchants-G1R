@@ -145,6 +145,34 @@ Not (yet) verified:
 - Chapter-restock additions on an existing save (predicted x3 per chapter
   entry; save-persisted accumulated stock stays vanilla - see the README's
   existing-saves section for the engine evidence).
+- The v1.3.0 feature end-to-end: that the 12 new restock configs grant
+  stock at chapter transitions in a live game (compile-proven in both boot
+  paths, runs 13-14; no in-game observation yet).
+
+### v1.3.0 chapter-restocks feature (2026-11-22)
+
+Pre-flight finding: `G1R/Mods/RichMerchants` had become a REAL directory
+(stale v1.0.x content - the Workshop upload flow re-copies the package and
+replaces the symlink). Re-symlinked to the repo package before the runs;
+the dir must be re-copied to a real directory again before any future
+Workshop upload (uploader hangs on symlinks).
+
+| # | Mod content | Flags / isolation | Result | Conclusion |
+|---|---|---|---|---|
+| 13 | v1.3.0 package (base hook + 12 leaf `ReplaceParentClass` hooks in `Restocks.as`) | `-as-exit-on-error -as-ignore-precompiled-data -Mods=RichMerchants`, `Mods.ini` absent | alive at 240 s (**124**) | full-recompile path: 12 leaf replacements on top of the shared-base replacement compile clean together with all recompiled vanilla scripts |
+| 14 | v1.3.0 package (real) | `-as-exit-on-error -Mods=RichMerchants` (no recompile flag), `Mods.ini` absent | alive at 240 s (**124**) | default boot path (precompiled vanilla + freshly compiled mod) also clean |
+
+A first launch of run 13 was interrupted by the user and counts as nothing
+(killed wrapper only; the orphaned exe and wine helpers were killed by PID,
+`Mods.ini` re-scrubbed before the valid rerun). Proton's `nvngx_update.exe`
+copy error and `fsync` warnings appeared on every launch, clean and failing
+alike - benign. Both valid runs ended with the orphan check: zero
+`G1R-Win64-Shipping.exe` / wine / proton processes remaining.
+
+Not (yet) verified for v1.3.0: that the new restock entries actually grant
+stock at chapter transitions (needs either a new game played into chapter 2
+or a pre-mod mid-game save; neither was available). The compile-only claims
+above are what the harness can prove.
 
 ### Reproduce
 
