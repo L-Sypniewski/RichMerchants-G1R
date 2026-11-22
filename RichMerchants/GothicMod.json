@@ -3,7 +3,7 @@
 	"title": "Rich Merchants - More Ore, Arrows & Bolts (native port)",
 	"author": "L-Sypniewski (native port). Original mod: tailwindtom",
 	"description": "Multiplies every trader's stock of ore, arrows and bolts (default x3, configurable via in-game settings sliders - Settings, Game, Rich Merchants; labeled EN/PL with EN fallback; changes apply from the next launch) so merchants stay useful as buyers and sellers for longer. Covers all traders, all chapter restocks and all difficulty presets. Native AngelScript port of Rich Merchants by tailwindtom (Nexus Mods #161, v1.0.2).",
-	"projectWebsiteURL": "https://www.nexusmods.com/gothic1remake/mods/161",
+	"projectWebsiteURL": "https://github.com/L-Sypniewski/RichMerchants-G1R",
 	"modVersion": "1.2.0",
 	"loadOrder": "normal"
 }
