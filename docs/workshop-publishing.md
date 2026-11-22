@@ -39,10 +39,24 @@ L-Sypniewski). In the game's Mod Manager:
 
 | | |
 |---|---|
-| Workshop Item ID | _(fill after first upload)_ |
-| URL | `https://steamcommunity.com/sharedfiles/filedetails/?id=<ID>` |
-| First published | _(fill)_ |
-| Last version uploaded | _(fill, e.g. 1.2.0)_ |
+| Workshop Item ID | **3844276160** |
+| URL | <https://steamcommunity.com/sharedfiles/filedetails/?id=3844276160> |
+| First published | 2026-11-22 |
+| Last version uploaded | 1.2.0 |
+
+## Hard-won upload facts (2026-11-22 first upload)
+
+- The **Upload to Steam Workshop** button only appears with a properly
+  authenticated Steamworks session — launch through the Steam client with
+  `-ModManagementUI` as a Steam launch option (a command-line Proton launch
+  showed no upload affordance at all).
+- The uploader **hangs on symlinked mod directories** — `G1R/Mods/<Mod>`
+  must be a REAL directory for the upload (the dev symlink workflow is fine
+  for playing/testing; re-copy the package over the directory before each
+  upload: `cp -a <repo>/<Mod>/* G1R/Mods/<Mod>/`).
+- The preview-image picker is a Wine dialog: Linux files are under the
+  **Z:** drive (`Z:\home\<user>\...`); stage screenshots somewhere short.
+
 
 ## Notes
 

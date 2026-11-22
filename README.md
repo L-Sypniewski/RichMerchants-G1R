@@ -124,6 +124,8 @@ Steam Workshop (preferred) — or clone/copy `RichMerchants/` into the game's
 game's official mod support (ModKit); conflicts with nothing, but do **not**
 stack with another mod that multiplies the same stock (effects would chain).
 
+**Steam Workshop**: <https://steamcommunity.com/sharedfiles/filedetails/?id=3844276160> (v1.2.0)
+
 ## Status
 
 - **In-game verified** (build `Build106_CL176207`, human sessions 2026-11-20):
