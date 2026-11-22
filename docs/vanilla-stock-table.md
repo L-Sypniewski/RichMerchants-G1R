@@ -69,3 +69,9 @@ scrolls, rings) - stock no ore nuggets, arrows or bolts, so there is nothing
 for the multipliers to scale. `DemoHunter` and `QuestDealer` are demo/quest
 configs rather than regular world merchants, but they carry ore/ammo and are
 boosted like the rest.
+
+A "CH1" row is the initial `OnWorldStart` seed; "CH2"-"CH6" rows exist only
+where vanilla defines `StoryG1R_EnteredChapter_N` restock entries. Many
+traders (e.g. BaalKagan, BaalIsidro, Malon) have no chapter events at all -
+their chapter-1 stock is everything they ever get, so a single-row entry is
+complete, not truncated.
