@@ -68,10 +68,16 @@ above - Riordian (herbs, potions, alchemy ingredients) and Xardas (runes,
 scrolls, rings) - stock no ore nuggets, arrows or bolts, so there is nothing
 for the multipliers to scale. `DemoHunter` and `QuestDealer` are demo/quest
 configs rather than regular world merchants, but they carry ore/ammo and are
-boosted like the rest.
+boosted like the rest. Neither is bound to a regular world NPC:
+`UDemoHunterTraderConfig` has no `m_UniqueName` at all, and
+`UQuestDealerTraderConfig` binds to the demo NPC `Demo_None_Hunter_2202` (a
+`QuestDealer_JOINOC` story function in `StoryFunctions.as` is a developer
+test hook that force-starts the chapter-1 Old Camp quests).
 
 A "CH1" row is the initial `OnWorldStart` seed; "CH2"-"CH6" rows exist only
-where vanilla defines `StoryG1R_EnteredChapter_N` restock entries. Many
-traders (e.g. BaalKagan, BaalIsidro, Malon) have no chapter events at all -
-their chapter-1 stock is everything they ever get, so a single-row entry is
-complete, not truncated.
+where vanilla defines `StoryG1R_EnteredChapter_N` restock entries. 14 of the
+28 traders have no chapter events - BaalKagan, BaalIsidro, Malon, Silas,
+Jeremiah, Dexter, Graham, Mordrag, Alberto, Glen, Santino, Viper, plus the
+two demo configs - so their chapter-1 stock is everything they ever get: a
+single-row entry is complete, not truncated, and existing saves never gain
+boosted amounts from them (there is no later event that could fire).
