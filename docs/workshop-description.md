@@ -1,10 +1,9 @@
-# Steam Workshop item description (copy-paste verbatim)
+# Steam Workshop item description - VERBATIM copy of the live item
 
-> Attribution is mandatory in this text - it credits the original mod and
-> author. Do not publish the Workshop item without this banner.
-> Steam Workshop renders BBCode ([h1], [b], [list], [url=]).
-
----
+> This file mirrors, byte for byte, the description published on the
+> Workshop item (ID 3844276160). Edit here first, then paste into the item
+> via its web Edit - the two must never drift. The attribution banner is
+> mandatory; never publish without it. Steam renders BBCode.
 
 [h1]Rich Merchants - native port[/h1]
 
