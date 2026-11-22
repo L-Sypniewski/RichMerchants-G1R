@@ -5,6 +5,9 @@
 > ([Nexus Mods #161](https://www.nexusmods.com/gothic1remake/mods/161),
 > v1.0.2). No original code is included; see the repo's `NOTICE.md`.
 
+**Steam Workshop**: <https://steamcommunity.com/sharedfiles/filedetails/?id=3844276160>
+**Source & issues**: <https://github.com/L-Sypniewski/RichMerchants-G1R>
+
 Multiplies every trader's stock of **ore**, **arrows** and **bolts**
 (default **x3**) so merchants stay useful as buyers and sellers for longer.
 Covers all traders, all chapter restocks and all difficulty presets, and
