@@ -59,3 +59,13 @@ multiplier (exactly as in the shipped AngelScript override).
 | QuestDealer | ItAm_Arrow | CH1: 25→75 |
 
 Totals over all 28 traders, 115 stock entries: 3645 -> 10935 (x3.000).
+
+The game defines trader stock for exactly 30 traders - the `U*TraderConfig`
+classes (29 in `Script/Items/GenericItems/TradersGeneric.as`, plus
+`UQuestDealerTraderConfig` in `Script/LevelScripts/TradersData.as`); nothing
+else in the vanilla `Script/` tree defines trader stock. The two not listed
+above - Riordian (herbs, potions, alchemy ingredients) and Xardas (runes,
+scrolls, rings) - stock no ore nuggets, arrows or bolts, so there is nothing
+for the multipliers to scale. `DemoHunter` and `QuestDealer` are demo/quest
+configs rather than regular world merchants, but they carry ore/ammo and are
+boosted like the rest.
